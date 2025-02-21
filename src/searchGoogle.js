@@ -1,11 +1,7 @@
 // searchGoogle.js
 
-const apiKey = 'AIzaSyDppukOzTaSIYM1yBrqZ7BPbc64U0TsCqc';
-const cx = '101b94f7b53664b6c';
-
 async function searchGoogle(query) {
-  const url = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&key=${apiKey}&cx=${cx}&gl=sk&hl=sk`;
-
+  const url = `https://moje-api.vercel.app/api/search?q=${encodeURIComponent(query)}`;
   try {
     const response = await fetch(url);
     const data = await response.json();
