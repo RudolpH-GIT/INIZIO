@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vyhľadávač Google</title>
+</head>
+<body>
+<h1>Vyhľadávač Google</h1>
+
+<label for="searchQuery">Zadaj hľadaný termín:</label>
+<input type="text" id="searchQuery" placeholder="Zadaj hľadaný termín...">
+<button id="searchButton">Hľadať</button>
+
+<h2>Výsledky:</h2>
+<ul id="results"></ul>
+
+<!-- Tlačidlo pre uloženie výsledkov je skryté zo začiatku -->
+<button id="saveButton" style="display: none;">Uložiť výsledky</button>
+
+<script src="src/searchGoogle.js"></script>
+<script>
+  // Funkcia na zobrazenie výsledkov po kliknutí na "Hľadať" alebo stlačení Enter
+  function performSearch() {
+    const query = document.getElementById('searchQuery').value;
+
+    // Skryj tlačidlo pred začiatkom vyhľadávania
+    document.getElementById('saveButton').style.display = 'none';
+
+    // Vykonaj vyhľadávanie
+    searchGoogle(query).then(results => {
+      const resultsHTML = displayResults(results);
+      document.getElementById('results').innerHTML = resultsHTML;
+
+      // Zobrazenie tlačidla pre uloženie výsledkov len v prípade, že sú nejaké výsledky
+      if (results.length > 0) {
+        document.getElementById('saveButton').style.display = 'inline-block';
+      }
+    });
+  }
+
+  // Kliknutím na tlačidlo "Hľadať"
+  document.getElementById('searchButton').addEventListener('click', performSearch);
+
+  // Stlačenie klávesy Enter
+  document.getElementById('searchQuery').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+      performSearch();
+    }
+  });
+
+  // Uloženie výsledkov ako JSON súbor
+  document.getElementById('saveButton').addEventListener('click', function() {
+    const results = document.getElementById('results').children;
+    const resultsArray = Array.from(results).map(item => {
+      return {
+        title: item.querySelector('a').textContent,
+        link: item.querySelector('a').href,
+        snippet: item.querySelector('br').nextSibling.textContent
+      };
+    });
+
+    const blob = new Blob([JSON.stringify(resultsArray, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'searchResults.json';
+    link.click();
+  });
+</script>
+</body>
+</html>
